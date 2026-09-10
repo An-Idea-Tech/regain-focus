@@ -1,0 +1,60 @@
+{
+  "name": "Regain - Focus Music",
+  "short_name": "Regain",
+  "description": "A minimal focus companion web app.",
+  "start_url": "./app.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#02040a",
+  "theme_color": "#02040a",
+  "categories": ["health", "music", "productivity"],
+  "icons": [
+    {
+      "src": "icons/icon-v12.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-v12.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    },    {
+      "src": "icons/icon-192-v12.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192-v12.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-512-v12.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512-v12.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Deep Relaxation",
+      "url": "./app.html?category=2",
+      "description": "Jump straight to relaxation"
+    },
+    {
+      "name": "Neural Focus",
+      "url": "./app.html?category=0",
+      "description": "Start a focus session"
+    }
+  ]
+}

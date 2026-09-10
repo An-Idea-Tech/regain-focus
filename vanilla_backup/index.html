@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<!--
+    Regain - Focus Music PWA
+    Author: Antigravity AI
+    Description: A premium, minimal focus companion designed for luxury focus sessions.
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regain - Focus Music</title>
+    
+    <!-- Resource Hints for YouTube & Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.youtube.com">
+    <link rel="dns-prefetch" href="https://img.youtube.com">
+    
+    <!-- Preload Critical CSS -->
+    <link rel="preload" href="css/style.css" as="style">
+    
+    <!-- Asynchronous Google Fonts -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    </noscript>
+
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <link rel="manifest" href="manifest-v14.json">
+    <link rel="apple-touch-icon" href="icons/icon-192-v14.png">
+    <link rel="icon" type="image/svg+xml" href="icons/icon-v14.svg">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Regain">
+    <meta name="theme-color" content="#02040a">
+
+    <!-- Deferred Non-blocking JS Assets (Parallel Download, Executed in Order) -->
+    <script src="js/data.js" defer></script>
+    <script src="js/audio.js" defer></script>
+    <script src="js/timer.js" defer></script>
+    <script src="js/app.js" defer></script>
+    
+    <!-- Preload YouTube API Script -->
+    <link rel="preload" href="https://www.youtube.com/iframe_api" as="script">
+</head>
+<body>
+    <div id="app" class="state-idle">
+        <!-- Top Bar Navigation -->
+        <header class="top-bar">
+            <button id="menu-toggle" class="nav-btn" aria-label="Open Menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+            </button>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Dark/Light Mode">
+                <svg id="theme-icon" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-11.314l.707.707m11.314 11.314l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
+            </button>
+        </header>
+
+        <!-- Side Menu -->
+        <aside id="side-menu" class="side-menu hidden">
+            <div class="menu-content glass-panel">
+                <div class="menu-header">
+                    <h2>Regain</h2>
+                    <button id="close-menu" class="close-icon">&times;</button>
+                </div>
+                
+                <div class="menu-inner">
+                    <nav class="menu-nav">
+                        <div class="menu-section">
+                            <h3>Soundscapes</h3>
+                            <ul id="menu-categories" class="menu-list">
+                                <!-- Injected via JS -->
+                            </ul>
+                        </div>
+
+                        <div class="menu-section">
+                            <h3>Settings</h3>
+                            <div class="setting-item" id="install-app-container" style="display: none;">
+                                <span>Install App</span>
+                                <button id="install-app-btn" class="btn btn-premium">Install App</button>
+                            </div>
+                            <div class="setting-item">
+                                <span>Auto-play next</span>
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item timer-setting-item">
+                                <span>Default Length</span>
+                                <div class="timer-setting-group">
+                                    <select id="default-timer-setting" class="glass-select">
+                                        <option value="5">5 mins</option>
+                                        <option value="10">10 mins</option>
+                                        <option value="15">15 mins</option>
+                                        <option value="20" selected>20 mins</option>
+                                        <option value="25">25 mins</option>
+                                        <option value="30">30 mins</option>
+                                        <option value="custom">Custom...</option>
+                                    </select>
+                                    <div id="custom-timer-container" class="hidden">
+                                        <input type="number" id="custom-timer-input" class="glass-input" placeholder="Mins" min="1" max="999">
+                                        <button id="apply-custom-timer" class="btn-icon">✓</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <span>Default Category</span>
+                                <select id="default-category-setting" class="glass-select">
+                                    <!-- Populated via JS -->
+                                </select>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Hero & Pulsing Timer -->
+        <main class="hero">
+            <div class="timer-container">
+                <div class="timer-glass"></div>
+                <svg class="timer-visual" viewBox="0 0 110 110">
+                    <circle class="timer-bg" cx="55" cy="55" r="48"></circle>
+                    <circle class="timer-progress" cx="55" cy="55" r="48"></circle>
+                </svg>
+                <div class="timer-display">
+                    <span class="timer-unit">minutes</span>
+                    <span id="time-left">20:00</span>
+                    <div class="timer-adjust-inline">
+                        <button id="timer-minus" aria-label="Subtract 5 minutes">−</button>
+                        <button id="timer-plus" aria-label="Add 5 minutes">+</button>
+                    </div>
+                </div>
+                <button id="play-btn" class="main-cta" aria-label="Start Session">
+                    <div class="icon-play"></div>
+                </button>
+            </div>
+        </main>
+            
+        <!-- Player Card -->
+        <div class="track-info glass-panel">
+            <div class="player-content">
+                <div class="category-pill" id="player-category-switch">
+                    <span id="current-track-category">Ambient Focus</span>
+                    <svg class="chevron" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5H7z"/></svg>
+                </div>
+                <h3 id="current-track-title">Stellar Drift</h3>
+                
+                <div id="player-status-line" class="player-status-line">
+                    <!-- Updated via JS -->
+                </div>
+                
+                <div class="player-controls-row">
+                    <button id="shuffle-btn" class="control-btn" title="Shuffle">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.44l2.04 2.04V4h-5.5zm.35 7.59l-1.41 1.41 3.13 3.13L14.5 18.17l2.04 2.04L21 16.17l-2.04-2.04-3.13-3.13z"/></svg>
+                    </button>
+                    <button id="prev-track" class="control-btn main-ctrl" aria-label="Previous Track">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                    </button>
+                    <button id="next-track" class="control-btn main-ctrl" aria-label="Next Track">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                    </button>
+                    <button id="repeat-btn" class="control-btn" title="Repeat">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- End Session Screen -->
+        <div id="end-screen" class="hidden">
+            <div class="end-content">
+                <span class="emoji">🙂</span>
+                <h2>Session Completed</h2>
+                <p>Stay in this calm state.</p>
+                <div class="recommendations">
+                    <h3>Try these next:</h3>
+                    <div id="rec-tracks" class="rec-grid">
+                        <!-- Recommendation cards -->
+                    </div>
+                </div>
+                <button id="close-end-screen" class="close-btn">Dismiss</button>
+            </div>
+        </div>
+
+        <!-- Category Modal -->
+        <div id="modal-container" class="hidden">
+            <div class="modal-content glass-panel">
+                <div class="modal-header">
+                    <h2 id="modal-title">Category Name</h2>
+                    <button id="close-modal" class="close-icon">&times;</button>
+                </div>
+                <div class="modal-inner">
+                    <div id="modal-tracks" class="tracks-list">
+                        <!-- Tracks for category -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom Tracks Manager Modal -->
+        <div id="custom-tracks-modal" class="hidden">
+            <div class="modal-content glass-panel">
+                <div class="modal-header">
+                    <h2>Custom Soundscapes</h2>
+                    <button id="close-custom-tracks" class="close-icon">&times;</button>
+                </div>
+                <div class="modal-inner">
+                    <!-- Add Form -->
+                    <div class="custom-track-form">
+                        <div class="form-group">
+                            <label for="custom-track-url">YouTube Link</label>
+                            <input type="text" id="custom-track-url" class="glass-input" placeholder="Paste link (e.g. https://youtu.be/...)" autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label for="custom-track-category">Assign to Category</label>
+                            <select id="custom-track-category" class="glass-select">
+                                <!-- Dynamic Focus Categories -->
+                            </select>
+                        </div>
+                        <button id="add-custom-track-btn" class="btn btn-premium btn-full">
+                            <span>Add Soundscape</span>
+                        </button>
+                        <div id="custom-track-error" class="form-error hidden"></div>
+                        <p class="custom-track-note">
+                            <span>⚠️</span> Note: Clearing cookies & site data in your browser history will remove your custom soundscapes.
+                        </p>
+                    </div>
+                    
+                    <!-- Saved Tracks List -->
+                    <div class="custom-tracks-section">
+                        <h3>Your Custom Soundscapes</h3>
+                        <div id="saved-custom-tracks-list" class="saved-tracks-list">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hidden YouTube Player -->
+        <div id="youtube-player-container" style="position: absolute; top: -9999px; left: -9999px;">
+            <div id="youtube-player"></div>
+        </div>
+
+        <!-- Installation Toast -->
+        <div id="install-toast" class="install-toast hidden">
+            <div class="toast-content glass-panel">
+                <div class="toast-icon">
+                    <img src="icons/icon-v14.svg" alt="Regain Icon">
+                </div>
+                <div class="toast-text">
+                    <strong>Install Regain</strong>
+                    <p>Add to your home screen for a better experience.</p>
+                </div>
+                <div class="toast-actions">
+                    <button id="toast-install-btn" class="btn btn-primary">Install</button>
+                    <button id="toast-close-btn" class="close-icon">&times;</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(reg => {
+                reg.addEventListener('updatefound', () => {
+                    const newWorker = reg.installing;
+                    if (newWorker) {
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                console.log('New app version loaded offline. Refreshing PWA instances...');
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Handle PWA cache update auto-reload instantly
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!refreshing) {
+                    refreshing = true;
+                    window.location.reload();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
